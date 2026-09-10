@@ -1,0 +1,202 @@
+:root {
+  font-family: "Avenir Next", Inter, ui-sans-serif, system-ui, sans-serif;
+  color: #eaf6f4;
+  background: #06181c;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --ink: #06181c;
+  --panel: #0b252a;
+  --panel-raised: #113036;
+  --line: rgba(204, 255, 80, 0.16);
+  --lime: #c9ff50;
+  --lime-dark: #9aca2e;
+  --mint: #65e5bd;
+  --muted: #9eb8b5;
+  --danger: #ff8a7a;
+}
+
+* { box-sizing: border-box; }
+
+html { min-width: 320px; background: var(--ink); }
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 8% 18%, rgba(101, 229, 189, 0.1), transparent 27rem),
+    radial-gradient(circle at 91% 91%, rgba(201, 255, 80, 0.08), transparent 28rem),
+    var(--ink);
+}
+
+button, input { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+
+.shell {
+  min-height: 100vh;
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 34px 42px;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--lime);
+  font: 800 1.35rem/1 "Avenir Next", Inter, sans-serif;
+  letter-spacing: -0.05em;
+}
+
+.brand svg { width: 27px; height: 27px; }
+
+.app-header, .auth-shell > header, .profile-shell > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-header {
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255,255,255,.09);
+}
+
+.account-menu { display: flex; align-items: center; gap: 12px; color: #d7e6e4; }
+.account-menu > span { display: flex; align-items: center; gap: 8px; font-size: .9rem; }
+.account-menu svg { width: 18px; }
+.account-menu button {
+  width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255,255,255,.12);
+  background: transparent; color: var(--muted); display: grid; place-items: center;
+}
+.account-menu button:hover { color: white; border-color: rgba(255,255,255,.3); }
+
+.workspace { flex: 1; padding: clamp(44px, 7vw, 82px) 0 50px; }
+.intro { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 36px; }
+.eyebrow { margin: 0 0 10px; color: var(--mint); font: 700 .75rem/1.3 "Avenir Next", Inter, sans-serif; text-transform: uppercase; letter-spacing: .15em; }
+h1, h2 { font-family: "Avenir Next", Inter, sans-serif; letter-spacing: -.045em; margin: 0; }
+.intro h1 { max-width: 730px; font-size: clamp(2.55rem, 5.4vw, 5.1rem); line-height: .99; }
+
+.device-badge {
+  flex: 0 0 auto; display: flex; gap: 10px; align-items: center; border: 1px solid rgba(255,255,255,.12);
+  color: #cce1de; padding: 10px 14px; border-radius: 999px; font-weight: 600; font-size: .82rem;
+}
+.device-badge > span, .online > span { width: 8px; height: 8px; background: var(--lime); border-radius: 50%; box-shadow: 0 0 0 5px rgba(201,255,80,.1); }
+.device-badge > span.offline-dot { background: var(--danger); box-shadow: 0 0 0 5px rgba(255,138,122,.1); }
+
+.action-grid { display: grid; grid-template-columns: minmax(330px, .88fr) minmax(390px, 1.12fr); gap: 18px; }
+.ring-card, .status-panel, .profile-card, .auth-card, .setup-card {
+  border: 1px solid rgba(255,255,255,.1);
+  background: linear-gradient(145deg, rgba(18,50,56,.96), rgba(8,31,36,.96));
+  box-shadow: 0 28px 80px rgba(0,0,0,.22);
+}
+.ring-card { min-height: 380px; border-radius: 28px; padding: 34px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+.ring-visual { width: 178px; height: 178px; position: relative; display: grid; place-items: center; margin-bottom: 22px; }
+.ring-visual > div { position: relative; z-index: 3; width: 91px; height: 91px; border-radius: 50%; background: var(--lime); color: var(--ink); display: grid; place-items: center; box-shadow: 0 14px 50px rgba(201,255,80,.24); }
+.ring-visual svg { width: 36px; height: 36px; }
+.pulse { position: absolute; inset: 18px; border-radius: 50%; border: 1px solid rgba(201,255,80,.3); }
+.pulse-two { inset: 0; border-color: rgba(201,255,80,.12); }
+.pulse.active { animation: pulse 1.6s ease-out infinite; }
+.pulse-two.active { animation-delay: .55s; }
+@keyframes pulse { 0% { transform: scale(.75); opacity: 1; } 100% { transform: scale(1.14); opacity: 0; } }
+
+.ring-button, .button-primary {
+  border: 0; border-radius: 13px; background: var(--lime); color: var(--ink); font: 800 .9rem/1 "Avenir Next", Inter, sans-serif;
+  letter-spacing: .02em; display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 22px;
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,.14); transition: transform .18s ease, background .18s ease;
+}
+.ring-button { width: min(100%, 270px); }
+.ring-button svg, .button-primary svg { width: 18px; }
+.ring-button:hover:not(:disabled), .button-primary:hover:not(:disabled) { background: #d8ff7a; transform: translateY(-2px); }
+.ring-button:disabled { opacity: .76; }
+.ring-card > p { color: var(--muted); font-size: .82rem; margin: 13px 0 0; }
+
+.status-stack { display: flex; flex-direction: column; gap: 14px; }
+.status-panel { flex: 1; border-radius: 28px; padding: 35px; min-height: 300px; }
+.status-heading { display: flex; align-items: flex-start; gap: 16px; }
+.status-icon { flex: 0 0 auto; width: 48px; height: 48px; border-radius: 15px; background: rgba(101,229,189,.1); color: var(--mint); display: grid; place-items: center; }
+.status-icon svg { width: 22px; }
+.status-panel h2 { font-size: clamp(1.55rem, 3vw, 2.4rem); line-height: 1.05; }
+.status-detail { color: var(--muted); max-width: 500px; line-height: 1.55; margin: 24px 0 42px; }
+.status-acknowledged .status-icon { background: rgba(201,255,80,.13); color: var(--lime); }
+.status-failed .status-icon, .status-expired .status-icon { background: rgba(255,138,122,.1); color: var(--danger); }
+.spin { animation: spin .9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.progress-track { list-style: none; padding: 0; margin: auto 0 0; display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; color: #78928f; font-size: .73rem; font-weight: 600; }
+.progress-track li { position: relative; padding-top: 16px; }
+.progress-track li::before { content: ""; position: absolute; top: 3px; left: 7px; right: -8px; height: 2px; background: rgba(255,255,255,.1); }
+.progress-track li:last-child::before { display: none; }
+.progress-track li > span { position: absolute; z-index: 1; top: 0; left: 0; width: 9px; height: 9px; background: #45605e; border-radius: 50%; box-shadow: 0 0 0 4px var(--panel); }
+.progress-track li.complete { color: #d9ebe8; }
+.progress-track li.complete > span, .progress-track li.complete::before { background: var(--lime); }
+
+.secondary-actions { display: flex; justify-content: flex-end; gap: 10px; min-height: 48px; align-items: center; }
+.button-secondary, .text-button {
+  min-height: 44px; border-radius: 11px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); color: #dcebe9; padding: 0 17px; font-weight: 700;
+}
+.button-secondary:hover { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.06); }
+.button-secondary.danger { color: #ffb0a6; }
+.text-button { background: none; border: 0; color: var(--muted); text-decoration: underline; text-underline-offset: 4px; }
+
+.error-banner { border: 1px solid rgba(255,138,122,.24); border-radius: 13px; background: rgba(255,138,122,.09); color: #ffc4bc; padding: 13px 15px; line-height: 1.45; font-size: .9rem; }
+.warning-banner { border: 1px solid rgba(255,210,91,.22); border-radius: 13px; background: rgba(255,210,91,.08); color: #ffe2a0; padding: 13px 15px; line-height: 1.45; font-size: .9rem; }
+
+footer { border-top: 1px solid rgba(255,255,255,.08); padding-top: 20px; display: flex; justify-content: space-between; gap: 22px; color: #76918e; font-size: .76rem; }
+footer > span { display: flex; align-items: center; gap: 8px; }
+footer svg { width: 15px; }
+.online { color: #b7cdc9; }
+
+.auth-shell, .profile-shell { max-width: 1100px; }
+.auth-card, .profile-card, .setup-card { width: min(100%, 680px); margin: auto; border-radius: 30px; padding: clamp(32px, 7vw, 64px); }
+.auth-card { text-align: center; }
+.phone-glyph { width: 72px; height: 72px; border-radius: 22px; display: grid; place-items: center; margin: 0 auto 28px; background: var(--lime); color: var(--ink); transform: rotate(-5deg); }
+.phone-glyph svg { width: 30px; }
+.auth-card h1, .profile-card h1, .setup-card h1 { font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.02; }
+.auth-copy { color: var(--muted); font-size: 1.05rem; max-width: 450px; margin: 22px auto 30px; line-height: 1.55; }
+.sign-in { width: min(100%, 330px); }
+.trust-line { display: flex; align-items: center; justify-content: center; gap: 7px; color: #78928f; font-size: .78rem; margin-top: 18px; }
+.trust-line svg { width: 15px; }
+
+.profile-form { margin-top: 38px; }
+.profile-form > label { display: block; font: 700 1.05rem/1.2 "Avenir Next", Inter, sans-serif; }
+.profile-form > p { color: var(--muted); margin: 8px 0 18px; }
+.input-shell { position: relative; }
+.input-shell input { width: 100%; height: 58px; border: 1px solid rgba(255,255,255,.16); border-radius: 13px; background: rgba(0,0,0,.14); color: white; font-size: 1.05rem; padding: 0 125px 0 17px; outline: 0; }
+.input-shell input:focus { border-color: var(--lime); box-shadow: 0 0 0 3px rgba(201,255,80,.1); }
+.input-shell span { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #66817e; font-size: .72rem; }
+.form-error { color: #ffc4bc !important; font-size: .84rem; }
+.form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.setup-card { text-align: left; }
+.setup-card > svg { width: 38px; height: 38px; color: var(--lime); margin-bottom: 25px; }
+.setup-card > p:last-child { color: var(--muted); line-height: 1.6; }
+.setup-card code { color: var(--lime); }
+.centered-shell > .brand { margin-bottom: 30px; }
+.loading-shell { align-items: center; justify-content: center; gap: 35px; }
+.loader-orbit { width: 44px; height: 44px; border: 2px solid rgba(201,255,80,.16); border-top-color: var(--lime); border-radius: 50%; animation: spin .9s linear infinite; }
+
+@media (max-width: 760px) {
+  .shell { padding: 24px 20px; }
+  .account-menu > span { max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .workspace { padding: 40px 0 28px; }
+  .intro { align-items: flex-start; flex-direction: column; margin-bottom: 24px; }
+  .intro h1 { font-size: clamp(2.5rem, 12vw, 4rem); }
+  .action-grid { grid-template-columns: 1fr; }
+  .ring-card { min-height: 320px; padding: 24px; }
+  .ring-visual { width: 145px; height: 145px; }
+  .ring-visual > div { width: 79px; height: 79px; }
+  .status-panel { min-height: 270px; padding: 27px 24px; }
+  .status-detail { margin-bottom: 34px; }
+  footer { flex-direction: column; }
+  footer > span:last-child { display: none; }
+  .auth-shell > header, .profile-shell > header { padding-bottom: 30px; }
+  .auth-card, .profile-card, .setup-card { margin: auto 0; padding: 32px 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+}
+
+button:focus-visible, input:focus-visible { outline: 3px solid rgba(201,255,80,.65); outline-offset: 3px; }

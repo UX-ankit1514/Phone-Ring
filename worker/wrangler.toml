@@ -1,0 +1,42 @@
+name = "arnifi-phone-bell"
+main = "src/index.ts"
+compatibility_date = "2026-09-10"
+workers_dev = true
+
+# Replaces the Cloud Tasks expiry queue and the Firestore TTL policies, which
+# both require a billing account. Cron Triggers are included in the free plan.
+[triggers]
+crons = ["* * * * *"]
+
+[observability]
+enabled = true
+
+[env.dev]
+name = "arnifi-phone-bell-dev"
+
+[env.dev.triggers]
+crons = ["* * * * *"]
+
+[env.dev.observability]
+enabled = true
+
+[env.dev.vars]
+APP_ENVIRONMENT = "dev"
+FIREBASE_PROJECT_ID = "arnifi-phone-bell-dev"
+ALLOWED_WORKSPACE_DOMAIN = "arnifi.com"
+TARGET_DEVICE_ID = "uae-phone-01"
+
+[env.prod]
+name = "arnifi-phone-bell-prod"
+
+[env.prod.triggers]
+crons = ["* * * * *"]
+
+[env.prod.observability]
+enabled = true
+
+[env.prod.vars]
+APP_ENVIRONMENT = "prod"
+FIREBASE_PROJECT_ID = "arnifi-phone-bell-prod"
+ALLOWED_WORKSPACE_DOMAIN = "arnifi.com"
+TARGET_DEVICE_ID = "uae-phone-01"

@@ -1,0 +1,85 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isArnifiTargetter() {
+      return isSignedIn()
+        && request.auth.token.email_verified == true
+        && request.auth.token.firebase.sign_in_provider == 'google.com'
+        && request.auth.token.email.matches('.*@arnifi[.]com$');
+    }
+
+    function isOwner(uid) {
+      return isArnifiTargetter() && request.auth.uid == uid;
+    }
+
+    function validDisplayName(name) {
+      return name is string
+        && name.size() >= 2
+        && name.size() <= 50
+        && !name.matches('.*[<>].*');
+    }
+
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid)
+        && request.resource.data.keys().hasOnly([
+          'displayName', 'email', 'role', 'createdAt', 'updatedAt', 'lastSeenAt'
+        ])
+        && validDisplayName(request.resource.data.displayName)
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.role == 'targetter'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.lastSeenAt == request.time;
+      allow update: if isOwner(uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'displayName', 'email', 'role', 'updatedAt', 'lastSeenAt'
+        ])
+        && validDisplayName(request.resource.data.displayName)
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.role == 'targetter'
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.lastSeenAt == request.time;
+      allow delete: if false;
+    }
+
+    match /devices/{deviceId} {
+      // This document is intentionally a public status projection. Private
+      // app/device details live under deviceMetadata and FCM credentials live
+      // under deviceCredentials; neither collection is client-readable.
+      allow read: if isArnifiTargetter()
+        && resource.data.keys().hasOnly([
+          'deviceId', 'displayName', 'active', 'availability', 'lastSeenAt'
+        ]);
+      allow write: if false;
+    }
+
+    match /deviceMetadata/{deviceId} {
+      allow read, write: if false;
+    }
+
+    match /deviceCredentials/{deviceId} {
+      allow read, write: if false;
+    }
+
+    match /config/sharedPhone {
+      allow read: if isArnifiTargetter();
+      allow write: if false;
+    }
+
+    match /phoneRequests/{requestId} {
+      allow read: if isArnifiTargetter()
+        && resource.data.requestedBy.uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

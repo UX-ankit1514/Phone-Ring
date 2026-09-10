@@ -1,0 +1,37 @@
+node_modules/
+dist/
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+functions/lib/
+functions/coverage/
+web/coverage/
+*.tsbuildinfo
+# Emitted by `tsc -b` alongside the TypeScript source.
+web/vite.config.js
+web/vite.config.d.ts
+android/.gradle/
+android/local.properties
+android/firebase.properties
+android/**/build/
+android/.idea/
+android/.kotlin/
+android/*.iml
+*.jks
+*.keystore
+keystore.properties
+service-account*.json
+google-credentials*.json
+
+# Cloudflare Workers
+.wrangler/
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+worker/.secrets/

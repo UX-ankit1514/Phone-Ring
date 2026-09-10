@@ -1,0 +1,15 @@
+# Copy to firebase.properties. Keep environment-specific client configuration local.
+# The API base URLs point at the Cloudflare Workers deployment; fill them in with
+#   node scripts/set-worker-url.mjs dev  https://arnifi-phone-bell-dev.<subdomain>.workers.dev
+#   node scripts/set-worker-url.mjs prod https://arnifi-phone-bell-prod.<subdomain>.workers.dev
+ARNIFI_DEV_API_BASE_URL=https://arnifi-phone-bell-dev.<subdomain>.workers.dev/api/v1/
+ARNIFI_DEV_FIREBASE_PROJECT_ID=arnifi-phone-bell-dev
+ARNIFI_DEV_FIREBASE_APPLICATION_ID=
+ARNIFI_DEV_FIREBASE_API_KEY=
+ARNIFI_DEV_FIREBASE_GCM_SENDER_ID=
+
+ARNIFI_PROD_API_BASE_URL=https://arnifi-phone-bell-prod.<subdomain>.workers.dev/api/v1/
+ARNIFI_PROD_FIREBASE_PROJECT_ID=arnifi-phone-bell-prod
+ARNIFI_PROD_FIREBASE_APPLICATION_ID=
+ARNIFI_PROD_FIREBASE_API_KEY=
+ARNIFI_PROD_FIREBASE_GCM_SENDER_ID=

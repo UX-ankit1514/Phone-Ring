@@ -1,0 +1,26 @@
+{
+  "name": "@arnifi/phone-bell-worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "npm run build:contracts && tsc --noEmit",
+    "build:contracts": "npm --prefix ../packages/contracts run build",
+    "typecheck": "npm run build:contracts && tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dev": "wrangler dev --env dev",
+    "deploy:dev": "wrangler deploy --env dev",
+    "deploy:prod": "wrangler deploy --env prod"
+  },
+  "dependencies": {
+    "@arnifi/contracts": "*",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250906.0",
+    "typescript": "^5.9.2",
+    "vitest": "^5.0.0",
+    "wrangler": "^4.35.0"
+  }
+}
