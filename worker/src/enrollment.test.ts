@@ -17,6 +17,7 @@ const INPUT = {
 let fake: FakeFirestore;
 let identities: Array<{ uid: string; claims: Record<string, unknown> }>;
 let google: GoogleClient;
+let tokenCreationError: Error | undefined;
 
 function service(env: Env = TEST_ENV): DeviceEnrollmentService {
   return new DeviceEnrollmentService(env, google, fake.client(), () => new Date("2026-09-10T10:00:00Z"));
@@ -34,11 +35,13 @@ async function expectRejected(action: Promise<unknown>, code: string): Promise<v
 beforeEach(() => {
   fake = new FakeFirestore();
   identities = [];
+  tokenCreationError = undefined;
   google = {
     async ensureTargetUser(uid: string, _displayName: string, claims: Record<string, unknown>) {
       identities.push({ uid, claims });
     },
     async createCustomToken(uid: string) {
+      if (tokenCreationError) throw tokenCreationError;
       return `custom-token-for-${uid}`;
     },
   } as unknown as GoogleClient;
@@ -82,6 +85,18 @@ describe("device enrollment", () => {
   it("burns the code so it cannot be replayed", async () => {
     await service().enroll(INPUT);
     await expectRejected(service().enroll(INPUT), "DEVICE_ENROLLMENT_INVALID");
+  });
+
+  it("does not burn the code when custom-token creation fails", async () => {
+    tokenCreationError = new Error("signing unavailable");
+
+    await expectRejected(service().enroll(INPUT), "DEVICE_TOKEN_SETUP_FAILED");
+    expect(fake.read(`deviceEnrollments/${TARGET_DEVICE_ID}`)).toBeNull();
+
+    tokenCreationError = undefined;
+    await expect(service().enroll(INPUT)).resolves.toMatchObject({
+      customToken: `custom-token-for-target-${TARGET_DEVICE_ID}`,
+    });
   });
 
   it("rejects a wrong code", async () => {

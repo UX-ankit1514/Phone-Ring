@@ -1,4 +1,5 @@
 import { errors } from "./errors";
+import { runtimeFetch } from "./runtimeFetch";
 import type { Principal } from "./types";
 
 const JWK_URL =
@@ -36,7 +37,7 @@ let keyCache: { keys: Map<string, CryptoKey>; expiresAt: number } | undefined;
 export async function verifyIdToken(
   token: string,
   projectId: string,
-  fetcher: typeof fetch = fetch,
+  fetcher: typeof fetch = runtimeFetch,
   now: () => number = Date.now,
 ): Promise<Principal> {
   const segments = token.split(".");

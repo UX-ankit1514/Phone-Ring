@@ -1,4 +1,5 @@
 import { AppError } from "./errors";
+import { runtimeFetch } from "./runtimeFetch";
 import type { Env, FirestoreDocument, FirestoreValue, FirestoreWrite } from "./types";
 import { GoogleClient } from "./google";
 
@@ -16,7 +17,7 @@ export class FirestoreRest {
   constructor(
     private readonly env: Env,
     private readonly google: GoogleClient,
-    private readonly fetcher: Fetch = fetch,
+    private readonly fetcher: Fetch = runtimeFetch,
   ) {
     this.root = `projects/${env.FIREBASE_PROJECT_ID}/databases/(default)/documents`;
   }

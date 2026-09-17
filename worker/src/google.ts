@@ -1,6 +1,7 @@
 import { AppError, errors } from "./errors";
 import { serviceAccount, signJwt } from "./crypto";
 import { verifyIdToken } from "./idToken";
+import { runtimeFetch } from "./runtimeFetch";
 import type { Env, Principal } from "./types";
 
 type Fetch = typeof fetch;
@@ -15,7 +16,7 @@ export function resetAccessTokenCache(): void {
 export class GoogleClient {
   constructor(
     private readonly env: Env,
-    private readonly fetcher: Fetch = fetch,
+    private readonly fetcher: Fetch = runtimeFetch,
   ) {}
 
   async accessToken(): Promise<string> {
