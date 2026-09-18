@@ -83,9 +83,11 @@ Phone Bell swaps the office-wide search for one button:
 ### 📱 For the person holding the phone
 
 - **It rings wherever the phone is:** locked, screen off, or with the app in the background.
-- **It shows who's asking**, so you know who to take the phone to.
+- **It rings like an alarm, not a notification.** The bell plays on the loudspeaker at maximum alarm volume, so it carries across the office, and the phone's own volume is put back the moment the request ends.
+- **It uses the phone's own ringtone.** Whatever tone the handset is set to is what people hear, so changing it in Settings changes the bell — no new build needed.
+- **It shows who's asking on a full-screen card**, so you know who to take the phone to without unlocking anything.
 - **One tap stops the ring and replies.** If the phone is offline at that moment, the reply is queued and sent when it reconnects.
-- **Test Ring and Diagnostics** check notifications, volume, Do Not Disturb, internet and push registration, so you can fix setup problems before they matter.
+- **Test Ring and Diagnostics** check notifications, audio, Do Not Disturb, the caller-display permissions, internet and push registration, so you can fix setup problems before they matter.
 
 ### 🛡️ Reliable by design
 
@@ -340,19 +342,22 @@ To deploy production, repeat the steps with `prod`. Full guides:
 
 1. Build the APK and install it on the Samsung.
 2. Open **Arnifi Phone Bell** and enter the **one-time enrollment code** from an administrator.
-3. Open **Diagnostics** and check that it reports: Firebase configured, enrollment complete, FCM token registered, notifications ready, audio ready.
-4. Tap **TEST RING** and make sure you can hear it.
-5. Rotate the enrollment code right away.
+3. Grant the two permissions the home screen asks for — **Display over other apps**, and **Full-screen alerts** on Android 14+ — so the requester's name can be shown.
+4. Open **Diagnostics** and check that it reports: Firebase configured, enrollment complete, FCM token registered, notifications ready, audio ready, caller name ready.
+5. Tap **TEST RING** and make sure you can hear it and see the name.
+6. Rotate the enrollment code right away.
 
 Keep the phone ready to ring:
 
-- Keep notifications on for the **UAE Phone Requests** channel, and keep notification volume up.
+- Keep notifications on for the **UAE Phone Requests** channel.
+- Keep **Display over other apps** and **Full-screen alerts** allowed, so the caller's name still appears.
+- To change the bell, change the phone's ringtone in Settings. Diagnostics shows the tone that will play.
 - Set battery use to **Unrestricted**. Don't put the app in *Sleeping* or *Deep sleeping apps*.
 - Allow background data, and keep Google Play services up to date.
 - Don't force-stop the app.
 
-> [!CAUTION]
-> The app **respects Silent mode and Do Not Disturb** on purpose. If the phone is silenced, a request arrives but makes no sound. Keep the phone audible during working hours.
+> [!NOTE]
+> The bell is an **alarm**, so Silent mode, a low ringer volume and ordinary Do Not Disturb profiles no longer keep it quiet. The only setting that does is Do Not Disturb on **Total silence** — and even then the requester's name still appears on screen.
 
 The full guide is in [Android installation and enrollment](docs/android-installation.md).
 
@@ -451,7 +456,7 @@ Firebase accepted the push, but the phone hasn't confirmed it. The phone is prob
 <details>
 <summary><b>It says "Phone received" but nobody heard it.</b></summary>
 
-The phone is probably on Silent or Do Not Disturb, or its notification volume is at zero. The app respects these settings on purpose. Diagnostics shows **Audio: suppressed** when this is happening.
+Check Do Not Disturb: **Total silence** is the one profile that stops the alarm, and Diagnostics reports **Audio: silenced by Total silence** when it is on. Silent mode and low ringer or media volume are not the cause — the bell raises the alarm volume to maximum by itself. If it was heard but nobody knew who was asking, grant **Display over other apps** and **Full-screen alerts**.
 </details>
 
 <details>

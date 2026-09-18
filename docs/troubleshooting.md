@@ -12,7 +12,13 @@ Check, in order:
 
 ## Test Ring fails
 
-Check notification permission, `UAE Phone Requests` channel state, notification volume, Silent/DND mode, vibration setting, and Samsung battery controls. Use the Diagnostics shortcut to open notification settings.
+Check notification permission, `UAE Phone Requests` channel state, vibration setting, and Samsung battery controls. Use the Diagnostics shortcut to open notification settings.
+
+The alert rides the alarm stream and raises it to maximum by itself, so media and ringer volume are not the cause. If there is no sound at all, check whether Do Not Disturb is set to **Total silence**, which is the only profile that stops it.
+
+To change the bell, change the phone's ringtone in Settings; Diagnostics reports the tone it resolved. A phone set to a Silent ringtone falls back to the bell shipped with the app.
+
+If the phone rings but the requester's name does not appear, the caller-display permissions are missing: grant **Display over other apps**, and **Full-screen alerts** on Android 14+. Diagnostics lists both.
 
 ## Website remains Sent
 

@@ -42,18 +42,23 @@ cd android
 1. Deploy the matching backend and create a fresh `DEVICE_ENROLLMENT_CODE` secret.
 2. Install the dev APK on the Samsung for acceptance testing.
 3. Open Arnifi Phone Bell and enter the one-time code.
-4. Confirm Diagnostics reports Firebase configured, device enrolled, FCM token registered, notifications enabled, and Test Ring successful.
-5. Rotate the enrollment secret immediately after success.
+4. Grant the two caller-display permissions the home screen asks for: **Display over other apps** and **Full-screen alerts** (Android 14+). Neither is needed for the phone to ring, only to show who is asking.
+5. Confirm Diagnostics reports Firebase configured, device enrolled, FCM token registered, notifications enabled, and Test Ring successful.
+6. Rotate the enrollment secret immediately after success.
 
 ## Samsung operating settings
 
 1. Allow notifications and confirm the `UAE Phone Requests` channel is enabled.
-2. Set notification volume high enough for the office.
+2. Allow **Display over other apps** and, on Android 14+, **Full-screen alerts**.
 3. Allow background data.
 4. Set battery use to Unrestricted where the Samsung model provides that option.
 5. Remove the app from Sleeping and Deep sleeping apps.
 6. Keep Google Play services enabled and updated.
 
-The product intentionally respects Silent and Do Not Disturb. Operational setup must keep the company-owned phone in an audible mode when it is expected to receive requests.
+From V2 the alert is an alarm, not a notification tone. It plays on the loudspeaker at maximum alarm volume regardless of the media or ringer volume, and it is not silenced by Silent mode or by ordinary Do Not Disturb profiles. The alarm stream volume is restored to whatever it was as soon as the request ends.
+
+The bell is the handset's own ringtone, read from the phone at ring time, so the alert sounds like the device it lives on and follows any later change in Settings. Nothing copyrighted is bundled into the APK. A phone whose ringtone is set to Silent falls back to the bell shipped with the app, so a shared phone cannot be muted by accident. Diagnostics names the tone that will play.
+
+The one setting that still silences it is Do Not Disturb set to **Total silence**, which is the phone owner's explicit "nothing at all". The caller's name is still shown on screen in that case.
 
 Force-stopping the app prevents reliable FCM receipt until it is opened again. Diagnostics and the runbook treat a force-stopped app as not ready.
