@@ -12,6 +12,7 @@ import { useMemo, useState } from "react";
 import { useAuth } from "./auth/AuthProvider";
 import { ArnifiMark } from "./components/ArnifiMark";
 import { ProfileForm } from "./components/ProfileForm";
+import { ThemeToggle } from "./components/ThemeToggle";
 import { isTerminalState, StatusPanel } from "./components/StatusPanel";
 import { config } from "./config";
 import { getFirebaseServices } from "./firebase/client";
@@ -103,7 +104,7 @@ export function App() {
   if (!authenticated) {
     return (
       <main className="shell auth-shell">
-        <header><ArnifiMark /></header>
+        <header><ArnifiMark /><ThemeToggle /></header>
         <section className="auth-card">
           <div className="phone-glyph"><Phone aria-hidden="true" /></div>
           <p className="eyebrow">Internal utility</p>
@@ -122,7 +123,7 @@ export function App() {
   if (!displayName || editingName) {
     return (
       <main className="shell profile-shell">
-        <header><ArnifiMark /></header>
+        <header><ArnifiMark /><ThemeToggle /></header>
         <section className="profile-card">
           <p className="eyebrow">One quick detail</p>
           <h1>Your name on the phone</h1>
@@ -144,6 +145,7 @@ export function App() {
         <ArnifiMark />
         <div className="account-menu">
           <span><CircleUserRound aria-hidden="true" /> {displayName}</span>
+          <ThemeToggle />
           {!auth.isDemo && (
             <button onClick={auth.signOutUser} title="Sign out" aria-label="Sign out">
               <LogOut aria-hidden="true" />

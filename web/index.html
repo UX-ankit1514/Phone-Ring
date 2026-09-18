@@ -3,9 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#ebebff" />
+    <meta name="theme-color" content="#e7e7f4" />
     <meta name="description" content="Request Arnifi's shared UAE calling phone." />
     <title>UAE Phone Bell · Arnifi</title>
+    <script>
+      // Runs before the first paint so the page never flashes the wrong theme.
+      // Mirrors the storage key and defaults in src/theme.ts.
+      (function () {
+        try {
+          var stored = localStorage.getItem("arnifi.theme");
+          var dark =
+            stored === "dark" ||
+            (stored !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.dataset.theme = dark ? "dark" : "light";
+          document
+            .querySelector('meta[name="theme-color"]')
+            .setAttribute("content", dark ? "#0b0b1a" : "#e7e7f4");
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -6,16 +6,15 @@
   plus a gutter rather than as fixed pixel offsets, so the same proportions hold
   from a phone up to a wide desktop. Type sizes that would overflow a narrow
   screen are clamped between a readable minimum and the design's exact value.
+
+  Colour is addressed through semantic tokens rather than the brand ramp
+  directly, so the light and dark themes below are the only two places a colour
+  decision is made. Every pairing here clears WCAG AA: 4.5:1 for body text,
+  3:1 for large text and for the controls a person has to find.
 */
 
 :root {
-  font-family: "Avenir Next", Inter, ui-sans-serif, system-ui, sans-serif;
-  color: var(--ink);
-  background: var(--arnique-200);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-
-  /* Arnique palette */
+  /* Arnique brand ramp — fixed, identical in both themes. */
   --arnique-100: #f5f5ff;
   --arnique-200: #ebebff;
   --arnique-300: #d6d6ff;
@@ -23,33 +22,111 @@
   --arnique-600: #8282e0;
   --arnique-800: #4646b8;
   --arnique-1000: #16167a;
-
-  --ink: var(--arnique-1000);
-  --logo: #2e2ea3;
-  --link: #6177e1;
-  --on-card: #ffffff;
-  --on-card-heading: #eaf6f4;
-  --footer-muted: #b7cdc9;
   --lime: #c9ff50;
+
+  /* Light theme.
+     The page sits a step below Arnique-200: a large flat field of the fully
+     saturated tint glares, and the two soft glows below give it depth so the
+     eye has somewhere to rest. */
+  --bg: #e7e7f4;
+  --bg-glow-a: rgba(130, 130, 224, 0.26);
+  --bg-glow-b: rgba(70, 70, 184, 0.14);
+  /* A step below Arnique-600. On #8282e0, the design's own card colour, white
+     body text lands at 2.94:1 and fails AA. This is the lightest shade that
+     clears 4.5:1 for white body text while still keeping the navy button at
+     3:1 against the card, and the deeper card lifts the page off its
+     background rather than glaring against it. */
+  --surface: #6a6ad2;
+  --surface-border: rgba(255, 255, 255, 0.18);
+  --surface-2: #c7c7ff;
+  --surface-2-border: #c7c7ff;
+  --surface-2-hover: #d6d6ff;
+  --ink: #16167a;
+  --ink-muted: #4a4a93;
+  --on-surface: #ffffff;
+  --on-surface-muted: #ffffff;
+  --on-surface-heading: #ffffff;
+  --on-surface-faint: rgba(255, 255, 255, 0.28);
+  --on-surface-fainter: rgba(255, 255, 255, 0.14);
+  --accent: #16167a;
+  --accent-hover: #2e2ea3;
+  --on-accent: #ffffff;
+  --link: #3b3ba8;
+  --rule: rgba(22, 22, 122, 0.14);
+  --field: #ffffff;
+  --logo: #2e2ea3;
+  --logo-accent: #4646b8;
   --danger: #b3261e;
+  --danger-bg: #ffdad6;
+  --danger-border: rgba(179, 38, 30, 0.28);
+  --danger-ink: #410002;
+  --card-shadow: 0 28px 80px rgba(22, 22, 90, 0.18);
+  --halo: 0 14px 50px rgba(22, 22, 122, 0.26);
+
+  font-family: "Avenir Next", Inter, ui-sans-serif, system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  color-scheme: light;
 
   --content: 1136px;
   --gutter: clamp(20px, 4vw, 34px);
   --card-radius: 28px;
-  --card-border: 1px solid rgba(255, 255, 255, 0.1);
-  --card-shadow: 0 28px 80px rgba(0, 0, 0, 0.22);
-  --halo: 0 14px 50px rgba(201, 255, 80, 0.24);
+  --card-border: 1px solid var(--surface-border);
+}
+
+/* Dark theme. The cards stay recognisably Arnique but drop to a depth that
+   reads as raised against the near-black indigo field, and the accent flips
+   to the light end of the ramp so the primary action still leads. */
+:root[data-theme="dark"] {
+  --bg: #0b0b1a;
+  --bg-glow-a: rgba(70, 70, 184, 0.30);
+  --bg-glow-b: rgba(130, 130, 224, 0.16);
+  --surface: #23235c;
+  --surface-border: rgba(199, 199, 255, 0.14);
+  --surface-2: #1b1b40;
+  --surface-2-border: rgba(199, 199, 255, 0.16);
+  --surface-2-hover: #24244f;
+  --ink: #e7e7f7;
+  --ink-muted: #a3a3cc;
+  --on-surface: #e9e9fb;
+  --on-surface-muted: rgba(233, 233, 251, 0.80);
+  --on-surface-heading: #ffffff;
+  --on-surface-faint: rgba(199, 199, 255, 0.26);
+  --on-surface-fainter: rgba(199, 199, 255, 0.12);
+  --accent: #c7c7ff;
+  --accent-hover: #dcdcff;
+  --on-accent: #10102e;
+  --link: #a9a9ff;
+  --rule: rgba(199, 199, 255, 0.16);
+  --field: #14143a;
+  --logo: #c7c7ff;
+  --logo-accent: #8f8fe8;
+  --danger: #ffb4ab;
+  --danger-bg: rgba(147, 0, 10, 0.32);
+  --danger-border: rgba(255, 180, 171, 0.30);
+  --danger-ink: #ffdad6;
+  --card-shadow: 0 28px 80px rgba(0, 0, 0, 0.45);
+  --halo: 0 14px 50px rgba(199, 199, 255, 0.16);
+
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
 
-html { min-width: 320px; background: var(--arnique-200); }
+html { min-width: 320px; background: var(--bg); }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: var(--arnique-200);
+  color: var(--ink);
+  background:
+    radial-gradient(1100px 620px at 10% -12%, var(--bg-glow-a), transparent 62%),
+    radial-gradient(900px 540px at 102% 108%, var(--bg-glow-b), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
 }
 
 button, input { font: inherit; }
@@ -84,7 +161,7 @@ button:disabled { cursor: not-allowed; }
 }
 
 .brand-star { width: 27px; height: 27px; fill: var(--logo); }
-.brand-call { width: 34px; height: 34px; fill: var(--arnique-800); }
+.brand-call { width: 34px; height: 34px; fill: var(--logo-accent); }
 .brand-call-dim { opacity: 0.4; }
 
 /* ── Header ──────────────────────────────────────────────────────────────── */
@@ -108,14 +185,28 @@ button:disabled { cursor: not-allowed; }
   width: 38px;
   height: 38px;
   border-radius: 19px;
-  border: 1px solid var(--arnique-400);
-  background: var(--arnique-400);
+  border: 1px solid var(--surface-2-border);
+  background: var(--surface-2);
   color: var(--ink);
   display: grid;
   place-items: center;
   transition: background .18s ease, border-color .18s ease;
 }
-.account-menu button:hover { background: var(--arnique-300); border-color: var(--arnique-300); }
+.account-menu button:hover { background: var(--surface-2-hover); }
+
+.theme-toggle {
+  width: 38px;
+  height: 38px;
+  border-radius: 19px;
+  border: 1px solid var(--surface-2-border);
+  background: var(--surface-2);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  transition: background .18s ease;
+}
+.theme-toggle:hover { background: var(--surface-2-hover); }
+.theme-toggle svg { width: 18px; height: 18px; }
 
 /* ── Hero ────────────────────────────────────────────────────────────────── */
 
@@ -153,9 +244,9 @@ h1, h2 { font-family: "Avenir Next", Inter, sans-serif; letter-spacing: -0.045em
   gap: 10px;
   align-items: center;
   padding: 10px 14px;
-  border: 1px solid var(--arnique-400);
+  border: 1px solid var(--surface-2-border);
   border-radius: 999px;
-  background: var(--arnique-400);
+  background: var(--surface-2);
   color: var(--ink);
   font: 600 13.12px/18px "Avenir Next", Inter, sans-serif;
 }
@@ -163,8 +254,8 @@ h1, h2 { font-family: "Avenir Next", Inter, sans-serif; letter-spacing: -0.045em
   width: 8px;
   height: 8px;
   border-radius: 4px;
-  background: var(--ink);
-  box-shadow: 0 0 0 5px rgba(201, 255, 80, 0.1);
+  background: var(--accent);
+  box-shadow: 0 0 0 5px var(--on-surface-fainter);
 }
 .device-badge > span.offline-dot { background: var(--danger); box-shadow: 0 0 0 5px rgba(179, 38, 30, 0.12); }
 
@@ -175,7 +266,7 @@ h1, h2 { font-family: "Avenir Next", Inter, sans-serif; letter-spacing: -0.045em
 
 .ring-card, .status-panel {
   border: var(--card-border);
-  background: var(--arnique-600);
+  background: var(--surface);
   box-shadow: var(--card-shadow);
   border-radius: var(--card-radius);
 }
@@ -197,15 +288,15 @@ h1, h2 { font-family: "Avenir Next", Inter, sans-serif; letter-spacing: -0.045em
   width: 91px;
   height: 91px;
   border-radius: 50%;
-  background: var(--ink);
-  color: var(--on-card);
+  background: var(--accent);
+  color: var(--on-accent);
   display: grid;
   place-items: center;
   box-shadow: var(--halo);
 }
 .ring-visual svg { width: 36px; height: 36px; }
-.pulse { position: absolute; inset: 18px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3); }
-.pulse-two { inset: 0; border-color: rgba(255, 255, 255, 0.12); }
+.pulse { position: absolute; inset: 18px; border-radius: 50%; border: 1px solid var(--on-surface-faint); }
+.pulse-two { inset: 0; border-color: var(--on-surface-fainter); }
 .pulse.active { animation: pulse 1.6s ease-out infinite; }
 .pulse-two.active { animation-delay: .55s; }
 @keyframes pulse { 0% { transform: scale(.75); opacity: 1; } 100% { transform: scale(1.14); opacity: 0; } }
@@ -213,8 +304,8 @@ h1, h2 { font-family: "Avenir Next", Inter, sans-serif; letter-spacing: -0.045em
 .ring-button, .button-primary {
   border: 0;
   border-radius: 13px;
-  background: var(--ink);
-  color: var(--on-card);
+  background: var(--accent);
+  color: var(--on-accent);
   font: 700 14.4px/14px "Avenir Next", Inter, sans-serif;
   letter-spacing: 0.02em;
   display: inline-flex;
@@ -228,10 +319,10 @@ h1, h2 { font-family: "Avenir Next", Inter, sans-serif; letter-spacing: -0.045em
 }
 .ring-button { width: min(100%, 270px); }
 .ring-button svg, .button-primary svg { width: 18px; height: 24px; }
-.ring-button:hover:not(:disabled), .button-primary:hover:not(:disabled) { background: var(--arnique-800); transform: translateY(-2px); }
+.ring-button:hover:not(:disabled), .button-primary:hover:not(:disabled) { background: var(--accent-hover); transform: translateY(-2px); }
 .ring-button:disabled { opacity: .76; }
 .ring-card > p {
-  color: var(--on-card);
+  color: var(--on-surface-muted);
   font: 400 13.12px/18px "Avenir Next", Inter, sans-serif;
   margin: 13px 0 0;
   max-width: 252px;
@@ -248,23 +339,23 @@ h1, h2 { font-family: "Avenir Next", Inter, sans-serif; letter-spacing: -0.045em
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: var(--ink);
-  color: var(--on-card);
+  background: var(--accent);
+  color: var(--on-accent);
   display: grid;
   place-items: center;
   box-shadow: var(--halo);
 }
 .status-icon svg { width: 22px; height: 24px; }
-.status-panel .eyebrow { color: var(--ink); }
+.status-panel .eyebrow { color: var(--on-surface-muted); }
 .status-panel h2 {
   padding-top: 12px;
-  color: var(--on-card-heading);
+  color: var(--on-surface-heading);
   font-weight: 700;
   font-size: clamp(1.6rem, 3vw, 38.4px);
   line-height: 1.05;
 }
 .status-detail {
-  color: var(--on-card);
+  color: var(--on-surface-muted);
   max-width: 500px;
   font: 400 16px/25px "Avenir Next", Inter, sans-serif;
   margin: 24px 0 42px;
@@ -280,12 +371,12 @@ h1, h2 { font-family: "Avenir Next", Inter, sans-serif; letter-spacing: -0.045em
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--on-surface-muted);
   font-size: .73rem;
   font-weight: 600;
 }
 .progress-track li { position: relative; padding-top: 16px; }
-.progress-track li::before { content: ""; position: absolute; top: 3px; left: 7px; right: -8px; height: 2px; background: rgba(255, 255, 255, 0.25); }
+.progress-track li::before { content: ""; position: absolute; top: 3px; left: 7px; right: -8px; height: 2px; background: var(--on-surface-faint); }
 .progress-track li:last-child::before { display: none; }
 .progress-track li > span {
   position: absolute;
@@ -294,12 +385,12 @@ h1, h2 { font-family: "Avenir Next", Inter, sans-serif; letter-spacing: -0.045em
   left: 0;
   width: 9px;
   height: 9px;
-  background: rgba(255, 255, 255, 0.45);
+  background: var(--on-surface-faint);
   border-radius: 50%;
-  box-shadow: 0 0 0 4px var(--arnique-600);
+  box-shadow: 0 0 0 4px var(--surface);
 }
-.progress-track li.complete { color: var(--on-card); }
-.progress-track li.complete > span, .progress-track li.complete::before { background: var(--ink); }
+.progress-track li.complete { color: var(--on-surface); }
+.progress-track li.complete > span, .progress-track li.complete::before { background: var(--accent); }
 
 /* ── Secondary actions ───────────────────────────────────────────────────── */
 
@@ -307,13 +398,13 @@ h1, h2 { font-family: "Avenir Next", Inter, sans-serif; letter-spacing: -0.045em
 .button-secondary, .text-button {
   min-height: 44px;
   border-radius: 11px;
-  border: 1px solid var(--arnique-400);
-  background: var(--arnique-400);
+  border: 1px solid var(--surface-2-border);
+  background: var(--surface-2);
   color: var(--ink);
   padding: 0 17px;
   font: 700 16px/22px "Avenir Next", Inter, sans-serif;
 }
-.button-secondary:hover { border-color: var(--arnique-300); background: var(--arnique-300); }
+.button-secondary:hover { background: var(--surface-2-hover); }
 .button-secondary.danger { color: var(--danger); }
 .text-button {
   background: none;
@@ -328,13 +419,13 @@ h1, h2 { font-family: "Avenir Next", Inter, sans-serif; letter-spacing: -0.045em
   padding: 13px 15px;
   font: 500 14.4px/21px "Avenir Next", Inter, sans-serif;
 }
-.error-banner { border: 1px solid rgba(179, 38, 30, 0.24); background: #ffdad6; color: #410002; }
-.warning-banner { border: 1px solid rgba(255, 210, 91, 0.22); background: var(--arnique-400); color: var(--ink); }
+.error-banner { border: 1px solid var(--danger-border); background: var(--danger-bg); color: var(--danger-ink); }
+.warning-banner { border: 1px solid var(--surface-2-border); background: var(--surface-2); color: var(--ink); }
 
 /* ── Footer ──────────────────────────────────────────────────────────────── */
 
 footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--rule);
   padding-top: 20px;
   display: flex;
   justify-content: space-between;
@@ -344,8 +435,8 @@ footer {
 }
 footer > span { display: flex; align-items: center; gap: 8px; }
 footer svg { width: 15px; height: 24px; }
-.online { color: var(--footer-muted); }
-.online > span { background: var(--lime); }
+.online { color: var(--ink-muted); }
+.online > span { background: var(--lime); box-shadow: 0 0 0 5px rgba(201, 255, 80, 0.12); }
 
 /* ── Sign-in, profile and setup screens ──────────────────────────────────── */
 
@@ -353,9 +444,9 @@ footer svg { width: 15px; height: 24px; }
 .auth-card, .profile-card, .setup-card {
   width: min(100%, 680px);
   margin: auto;
-  border: 1px solid var(--arnique-300);
+  border: 1px solid var(--rule);
   border-radius: 30px;
-  background: var(--arnique-100);
+  background: var(--surface-2);
   box-shadow: var(--card-shadow);
   color: var(--ink);
   padding: clamp(32px, 7vw, 64px);
@@ -368,8 +459,8 @@ footer svg { width: 15px; height: 24px; }
   display: grid;
   place-items: center;
   margin: 0 auto 28px;
-  background: var(--ink);
-  color: var(--on-card);
+  background: var(--accent);
+  color: var(--on-accent);
   transform: rotate(-5deg);
 }
 .phone-glyph svg { width: 30px; }
@@ -379,42 +470,42 @@ footer svg { width: 15px; height: 24px; }
   font-size: clamp(2rem, 5vw, 3.4rem);
   line-height: 1.02;
 }
-.auth-copy { color: var(--arnique-800); font-size: 1.05rem; max-width: 450px; margin: 22px auto 30px; line-height: 1.55; }
+.auth-copy { color: var(--ink-muted); font-size: 1.05rem; max-width: 450px; margin: 22px auto 30px; line-height: 1.55; }
 .sign-in { width: min(100%, 330px); }
-.trust-line { display: flex; align-items: center; justify-content: center; gap: 7px; color: var(--arnique-800); font-size: .78rem; margin-top: 18px; }
+.trust-line { display: flex; align-items: center; justify-content: center; gap: 7px; color: var(--ink-muted); font-size: .78rem; margin-top: 18px; }
 .trust-line svg { width: 15px; }
 
 .profile-form { margin-top: 38px; }
 .profile-form > label { display: block; font: 700 1.05rem/1.2 "Avenir Next", Inter, sans-serif; }
-.profile-form > p { color: var(--arnique-800); margin: 8px 0 18px; }
+.profile-form > p { color: var(--ink-muted); margin: 8px 0 18px; }
 .input-shell { position: relative; }
 .input-shell input {
   width: 100%;
   height: 58px;
-  border: 1px solid var(--arnique-300);
+  border: 1px solid var(--rule);
   border-radius: 13px;
-  background: #ffffff;
+  background: var(--field);
   color: var(--ink);
   font-size: 1.05rem;
   padding: 0 125px 0 17px;
   outline: 0;
 }
-.input-shell input:focus { border-color: var(--arnique-800); box-shadow: 0 0 0 3px rgba(70, 70, 184, 0.15); }
-.input-shell span { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--arnique-800); font-size: .72rem; }
+.input-shell input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--rule); }
+.input-shell span { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--ink-muted); font-size: .72rem; }
 .form-error { color: var(--danger) !important; font-size: .84rem; }
 .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
 
 .setup-card { text-align: left; }
-.setup-card > svg { width: 38px; height: 38px; color: var(--arnique-800); margin-bottom: 25px; }
-.setup-card > p:last-child { color: var(--arnique-800); line-height: 1.6; }
-.setup-card code { color: var(--arnique-800); }
+.setup-card > svg { width: 38px; height: 38px; color: var(--accent); margin-bottom: 25px; }
+.setup-card > p:last-child { color: var(--ink-muted); line-height: 1.6; }
+.setup-card code { color: var(--link); }
 .centered-shell > .brand { margin-bottom: 30px; }
 .loading-shell { align-items: center; justify-content: center; gap: 35px; }
 .loader-orbit {
   width: 44px;
   height: 44px;
-  border: 2px solid var(--arnique-400);
-  border-top-color: var(--ink);
+  border: 2px solid var(--rule);
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin .9s linear infinite;
 }
@@ -457,4 +548,4 @@ footer svg { width: 15px; height: 24px; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
 }
 
-button:focus-visible, input:focus-visible { outline: 3px solid var(--arnique-800); outline-offset: 3px; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
