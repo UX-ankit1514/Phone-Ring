@@ -2,6 +2,7 @@ package com.arnifi.phonebell.ui
 
 import android.Manifest
 import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.net.ConnectivityManager
@@ -35,11 +36,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.net.toUri
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arnifi.phonebell.ArnifiPhoneBellApp
+import com.arnifi.phonebell.BuildConfig
+import com.arnifi.phonebell.R
 import com.arnifi.phonebell.model.DiagnosticsSnapshot
+import com.arnifi.phonebell.ring.RingChannel
+import com.arnifi.phonebell.ring.RingTone
 
 class MainActivity : ComponentActivity() {
     private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
@@ -64,7 +74,7 @@ private fun PhoneBellApp(vm: MainViewModel) {
                 Text("UAE Phone Bell", style = MaterialTheme.typography.headlineMedium)
                 Text("Shared calling phone", style = MaterialTheme.typography.bodyLarge)
                 if (!diagnostics.enrolled) EnrollmentCard(vm, diagnostics, busy)
-                else HomeCard(vm, diagnostics, busy)
+                else HomeCard(vm, busy)
                 message?.let { Text(it, color = MaterialTheme.colorScheme.primary) }
                 HorizontalDivider()
                 TextButton(onClick = { showDiagnostics = !showDiagnostics }) { Text(if (showDiagnostics) "Hide diagnostics" else "Diagnostics") }
@@ -93,11 +103,12 @@ private fun EnrollmentCard(vm: MainViewModel, diagnostics: DiagnosticsSnapshot, 
 }
 
 @Composable
-private fun HomeCard(vm: MainViewModel, diagnostics: DiagnosticsSnapshot, busy: Boolean) {
+private fun HomeCard(vm: MainViewModel, busy: Boolean) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text("Ready for calls", style = MaterialTheme.typography.titleLarge)
-            Text("Keep notifications and sound enabled. Incoming requests ring this phone until you acknowledge them.")
+            Text(stringResource(R.string.home_ready_detail))
+            AlertSetup()
             Button(onClick = vm::testRing, enabled = !busy, modifier = Modifier.fillMaxWidth()) {
                 Text("TEST RING")
             }
@@ -108,17 +119,80 @@ private fun HomeCard(vm: MainViewModel, diagnostics: DiagnosticsSnapshot, busy: 
     }
 }
 
+/**
+ * The two system grants the caller-name screen needs. Each one disappears as soon as it is
+ * granted, so a fully configured phone shows nothing here at all.
+ *
+ * "Display over other apps" covers a phone that is awake and in use; full-screen alerts
+ * cover a phone that is locked. Neither is required for the phone to ring.
+ */
+@Composable
+private fun AlertSetup() {
+    val context = LocalContext.current
+    var overAppsGranted by remember { mutableStateOf(canDrawOverApps(context)) }
+    var lockScreenGranted by remember { mutableStateOf(canUseFullScreenAlerts(context)) }
+    // Both are granted out in Settings, so re-read them each time the user comes back here.
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        overAppsGranted = canDrawOverApps(context)
+        lockScreenGranted = canUseFullScreenAlerts(context)
+    }
+
+    if (!overAppsGranted) {
+        PermissionPrompt(
+            detail = stringResource(R.string.draw_over_apps_permission_detail),
+            action = stringResource(R.string.draw_over_apps_permission_action),
+            onClick = {
+                context.startSettings(
+                    Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+                        .setData("package:${context.packageName}".toUri()),
+                )
+            },
+        )
+    }
+    if (!lockScreenGranted) {
+        PermissionPrompt(
+            detail = stringResource(R.string.full_screen_alerts_permission_detail),
+            action = stringResource(R.string.full_screen_alerts_permission_action),
+            onClick = {
+                context.startSettings(
+                    Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT)
+                        .setData("package:${context.packageName}".toUri()),
+                )
+            },
+        )
+    }
+}
+
+@Composable
+private fun PermissionPrompt(detail: String, action: String, onClick: () -> Unit) {
+    Text(detail, style = MaterialTheme.typography.bodyMedium)
+    Button(onClick = onClick, modifier = Modifier.fillMaxWidth()) { Text(action) }
+}
+
+private fun canDrawOverApps(context: Context): Boolean = Settings.canDrawOverlays(context)
+
+private fun canUseFullScreenAlerts(context: Context): Boolean =
+    NotificationManagerCompat.from(context).canUseFullScreenIntent()
+
+/** Some OEM builds ship without these settings screens; a missing one must not crash the app. */
+private fun Context.startSettings(intent: Intent) {
+    runCatching { startActivity(intent) }
+}
+
 @Composable
 private fun DiagnosticsCard(snapshot: DiagnosticsSnapshot) {
     val context = LocalContext.current
     val notificationManager = context.getSystemService(NotificationManager::class.java)
-    val channel = notificationManager.getNotificationChannel(com.arnifi.phonebell.ring.RingService.CHANNEL_ID)
-    val notificationsReady = androidx.core.app.NotificationManagerCompat.from(context).areNotificationsEnabled() &&
+    val channel = notificationManager.getNotificationChannel(RingChannel.ID)
+    val notificationsReady = NotificationManagerCompat.from(context).areNotificationsEnabled() &&
         (channel == null || channel.importance != NotificationManager.IMPORTANCE_NONE)
     val audio = context.getSystemService(AudioManager::class.java)
     val dndActive = notificationManager.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
-    val silentMode = audio.ringerMode == AudioManager.RINGER_MODE_SILENT
-    val audioReady = audio.getStreamVolume(AudioManager.STREAM_NOTIFICATION) > 0 && !silentMode && !dndActive
+    // Alarm-usage audio is silenced only by total silence, not by Silent mode or the
+    // milder Do Not Disturb profiles.
+    val totalSilence = notificationManager.currentInterruptionFilter ==
+        NotificationManager.INTERRUPTION_FILTER_NONE
+    val audioReady = audio.getStreamMaxVolume(AudioManager.STREAM_ALARM) > 0 && !totalSilence
     val connectivity = context.getSystemService(ConnectivityManager::class.java)
     val network = connectivity.activeNetwork
     val internetReady = network != null && connectivity.getNetworkCapabilities(network)
@@ -126,16 +200,19 @@ private fun DiagnosticsCard(snapshot: DiagnosticsSnapshot) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text("Diagnostics", style = MaterialTheme.typography.titleLarge)
-            Text("Environment: ${com.arnifi.phonebell.BuildConfig.ENVIRONMENT}")
+            Text("Environment: ${BuildConfig.ENVIRONMENT}")
             Text("Firebase: ${if (snapshot.firebaseConfigured) "configured" else "not configured"}")
             Text("Enrollment: ${if (snapshot.enrolled) "complete" else "required"}")
             Text("FCM token: ${if (snapshot.tokenRegistered) "registered" else "not registered"}")
             Text("Notifications: ${if (notificationsReady) "ready" else "needs attention"}")
             Text("Internet: ${if (internetReady) "connected" else "offline"}")
-            Text("Audio: ${if (audioReady) "ready" else "suppressed by volume, Silent, or Do Not Disturb"}")
-            Text("Do Not Disturb: ${if (dndActive) "active — alerts stay quiet" else "off"}")
-            Text("Device: ${com.arnifi.phonebell.BuildConfig.TARGET_DEVICE_ID}")
-            Text("App version: ${com.arnifi.phonebell.BuildConfig.VERSION_NAME}")
+            Text("Audio: ${if (audioReady) "ready — alarm volume is raised to maximum while ringing" else "silenced by Total silence"}")
+            Text("Ringtone: ${RingTone.describe(context)}")
+            Text("Do Not Disturb: ${if (dndActive) "on — alarms still ring" else "off"}")
+            Text("Caller name over apps: ${if (canDrawOverApps(context)) "ready" else "permission required"}")
+            Text("Caller name on lock screen: ${if (canUseFullScreenAlerts(context)) "ready" else "permission required"}")
+            Text("Device: ${BuildConfig.TARGET_DEVICE_ID}")
+            Text("App version: ${BuildConfig.VERSION_NAME}")
             snapshot.lastRequestId?.let { Text("Last request: $it (${snapshot.lastRequestStatus ?: "unknown"})") }
             snapshot.lastRequesterName?.let { Text("Last requester: $it") }
             snapshot.lastFcmAtEpochMs?.let { Text("Last FCM: ${java.util.Date(it)}") }

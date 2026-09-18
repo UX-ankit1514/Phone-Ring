@@ -8,4 +8,20 @@
         <item name="android:windowActionModeOverlay">true</item>
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>
+
+    <!--
+        The incoming-request screen paints its own scrim over whatever is behind it, so the
+        window itself stays transparent and undimmed; adding backgroundDim on top would
+        darken the card twice. windowDisablePreview keeps a blank frame from flashing when
+        the screen is turned on to show the caller.
+    -->
+    <style name="Theme.ArnifiPhoneBell.Incoming" parent="Theme.ArnifiPhoneBell">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
 </resources>

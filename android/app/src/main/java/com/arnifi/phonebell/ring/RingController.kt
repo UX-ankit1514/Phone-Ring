@@ -1,14 +1,10 @@
 package com.arnifi.phonebell.ring
 
 import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.AudioAttributes
-import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -20,6 +16,12 @@ import com.arnifi.phonebell.ui.MainActivity
 
 /** Shared facade used by real FCM requests and the local Test Ring action. */
 class RingController(private val context: Context) {
+    init {
+        // Built once at app start, so an upgraded phone retires the V1 channel and shows
+        // the alarm-stream one in system settings before the first request ever arrives.
+        RingChannel.ensure(context)
+    }
+
     /** Returns true when RingService owns the alert; false when the safe notification fallback is used. */
     fun start(request: IncomingPhoneRequest, allowForegroundService: Boolean = true): Boolean {
         val intent = Intent(context, RingService::class.java)
@@ -50,7 +52,6 @@ class RingController(private val context: Context) {
     }
 
     private fun postNotificationFallback(request: IncomingPhoneRequest) {
-        createChannel()
         val acknowledge = PendingIntent.getBroadcast(
             context,
             request.requestId.hashCode(),
@@ -65,13 +66,26 @@ class RingController(private val context: Context) {
             Intent(context, MainActivity::class.java),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
-        val notification = NotificationCompat.Builder(context, RingService.CHANNEL_ID)
+        val callerOverlay = PendingIntent.getActivity(
+            context,
+            request.requestId.hashCode(),
+            RingOverlayActivity.createIntent(
+                context,
+                request.requestId,
+                request.requestedByName,
+                request.expiresAtEpochMs,
+            ),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+        val notification = NotificationCompat.Builder(context, RingChannel.ID)
             .setSmallIcon(R.drawable.ic_phone_bell)
             .setContentTitle(context.getString(R.string.incoming_phone_request))
             .setContentText(context.getString(R.string.incoming_phone_request_from, request.requestedByName))
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_CALL)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setContentIntent(open)
+            .setFullScreenIntent(callerOverlay, true)
             .setAutoCancel(false)
             .setTimeoutAfter(request.ringDurationSeconds.coerceIn(1, 30) * 1_000L)
             .addAction(R.drawable.ic_phone_bell, context.getString(R.string.ive_got_it), acknowledge)
@@ -83,27 +97,6 @@ class RingController(private val context: Context) {
         if (canPostNotifications) {
             NotificationManagerCompat.from(context).notify(RingService.NOTIFICATION_ID, notification)
         }
-    }
-
-    private fun createChannel() {
-        val manager = context.getSystemService(NotificationManager::class.java)
-        val sound = Uri.parse("android.resource://${context.packageName}/${R.raw.phone_bell}")
-        val attributes = AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
-            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .build()
-        manager.createNotificationChannel(
-            NotificationChannel(
-                RingService.CHANNEL_ID,
-                context.getString(R.string.notification_channel_name),
-                NotificationManager.IMPORTANCE_HIGH,
-            ).apply {
-                description = context.getString(R.string.notification_channel_description)
-                enableVibration(true)
-                vibrationPattern = longArrayOf(0, 500, 500)
-                setSound(sound, attributes)
-            },
-        )
     }
 
     companion object {
