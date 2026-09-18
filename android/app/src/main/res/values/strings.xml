@@ -4,8 +4,11 @@
     <string name="notification_channel_description">Alerts when an Arnifi employee requests the shared UAE calling phone.</string>
     <string name="incoming_phone_request">Incoming phone request</string>
     <string name="incoming_phone_request_from">%1$s is asking to use this phone</string>
-    <string name="requester_needs_phone">%1$s needs the UAE phone</string>
-    <string name="ringing_at_max_volume">Ringing at maximum volume</string>
+    <!-- Incoming-request card. Separate from the notification copy above so the
+         card can follow the brand design without changing what notifications say. -->
+    <string name="brand_arnifi" translatable="false">Arnifi</string>
+    <string name="overlay_incoming_request">Incoming Phone Request</string>
+    <string name="requester_needs_phone">%1$s Needs the UAE Phone</string>
     <string name="home_ready_detail">Requests ring on the loudspeaker at maximum alarm volume and show who is asking for the phone.</string>
     <string name="draw_over_apps_permission_detail">Allow “Display over other apps” so the requester’s name appears instantly, even while the phone is in use.</string>
     <string name="draw_over_apps_permission_action">ALLOW DISPLAY OVER APPS</string>

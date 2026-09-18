@@ -12,20 +12,24 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,6 +38,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -171,66 +176,119 @@ private fun IncomingRequestOverlay(requester: String, onAcknowledge: () -> Unit)
             modifier = Modifier
                 .fillMaxSize()
                 .background(SCRIM)
-                .padding(24.dp),
+                .padding(horizontal = CARD_MARGIN),
             contentAlignment = Alignment.Center,
         ) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(32.dp),
-                colors = CardDefaults.cardColors(containerColor = CARD),
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(CARD_SHAPE)
+                    .background(ARNIQUE_100)
+                    .border(CARD_BORDER, ARNIQUE_200, CARD_SHAPE)
+                    .padding(horizontal = CARD_PADDING)
+                    .padding(top = 48.dp, bottom = 30.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Column(
-                    modifier = Modifier.padding(horizontal = 28.dp, vertical = 36.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_phone_bell),
-                        contentDescription = null,
-                        modifier = Modifier.size(72.dp),
-                    )
-                    Text(
-                        text = stringResource(R.string.incoming_phone_request),
-                        color = ACCENT,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Text(
-                        text = stringResource(R.string.requester_needs_phone, requester),
-                        color = INK,
-                        fontSize = 34.sp,
-                        fontWeight = FontWeight.Bold,
-                        lineHeight = 40.sp,
-                        textAlign = TextAlign.Center,
-                    )
-                    Text(
-                        text = stringResource(R.string.ringing_at_max_volume),
-                        color = MUTED_INK,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center,
-                    )
-                    Button(
-                        onClick = onAcknowledge,
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(18.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = SIGNAL, contentColor = INK),
-                    ) {
-                        Text(
-                            text = stringResource(R.string.ive_got_it),
-                            modifier = Modifier.padding(vertical = 8.dp),
-                            fontSize = 17.sp,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
-                }
+                BrandLockup()
+                Spacer(Modifier.height(53.84.dp))
+                Text(
+                    text = stringResource(R.string.overlay_incoming_request),
+                    color = ARNIQUE_1000,
+                    fontSize = 20.sp,
+                    lineHeight = 24.sp,
+                    fontWeight = FontWeight.Medium,
+                )
+                Spacer(Modifier.height(15.dp))
+                Text(
+                    text = stringResource(R.string.requester_needs_phone, requester),
+                    color = ARNIQUE_1000,
+                    fontSize = 30.sp,
+                    lineHeight = 36.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(Modifier.height(54.dp))
+                AcknowledgeButton(onAcknowledge)
             }
         }
     }
 }
 
-private val SCRIM = Color(0xB3001516)
-private val CARD = Color(0xFFF4F7F2)
-private val ACCENT = Color(0xFF006C5B)
-private val INK = Color(0xFF071F21)
-private val MUTED_INK = Color(0xFF506163)
-private val SIGNAL = Color(0xFFB9FF38)
+/** The Arnifi wordmark and call glyph heading the card. */
+@Composable
+private fun BrandLockup() {
+    Row(
+        // Pinned to the design's height rather than left to the glyphs, so the gap
+        // down to the heading stays exactly as drawn whatever the font scale does.
+        modifier = Modifier.height(40.16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_arnifi_star),
+                contentDescription = null,
+                modifier = Modifier.size(27.dp),
+            )
+            Text(
+                text = stringResource(R.string.brand_arnifi),
+                color = ARNIFI_INK,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Medium,
+            )
+        }
+        Image(
+            painter = painterResource(R.drawable.ic_call_bulk),
+            contentDescription = null,
+            modifier = Modifier.size(34.dp),
+        )
+    }
+}
+
+@Composable
+private fun AcknowledgeButton(onAcknowledge: () -> Unit) {
+    Button(
+        onClick = onAcknowledge,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(68.dp),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(CARD_BORDER, ARNIQUE_300),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = ARNIQUE_800,
+            contentColor = ARNIQUE_200,
+        ),
+        contentPadding = PaddingValues(0.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.ive_got_it),
+            fontSize = 22.sp,
+            lineHeight = 27.sp,
+            fontWeight = FontWeight.SemiBold,
+        )
+    }
+}
+
+// Card geometry from the design: a 342dp card inset 24dp inside a 390dp frame,
+// holding 287dp of content. Expressed as margin and padding rather than fixed
+// widths so the proportions hold on a narrower or wider handset, and so a long
+// requester name grows the card downwards instead of being clipped by it.
+private val CARD_MARGIN = 24.dp
+private val CARD_PADDING = 27.5.dp
+private val CARD_BORDER = 1.dp
+private val CARD_SHAPE = RoundedCornerShape(20.dp)
+
+// Arnique palette.
+private val ARNIQUE_100 = Color(0xFFF5F5FF)
+private val ARNIQUE_200 = Color(0xFFEBEBFF)
+private val ARNIQUE_300 = Color(0xFFD6D6FF)
+private val ARNIQUE_800 = Color(0xFF4646B8)
+private val ARNIQUE_1000 = Color(0xFF16167A)
+private val ARNIFI_INK = Color(0xFF2E2EA3)
+
+// Not in the design, which shows the card on its own: this screen floats over
+// whatever the phone was doing, so the card needs something to sit against.
+private val SCRIM = Color(0xB30B0B1F)
